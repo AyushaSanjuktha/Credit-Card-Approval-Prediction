@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Credit Card Fraud Detection</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #0f3460; }
+    .card { border-radius: 14px; }
+    .brand { color: #e94560; font-weight: 700; }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; }
+    .feature-grid input { font-size: 0.8rem; }
+  </style>
+</head>
+<body class="py-5">
+  <div class="container">
+    <div class="card shadow p-4">
+      <h2 class="brand mb-1">Credit Card Fraud Detection</h2>
+      <p class="text-muted">Enter a transaction's features below to check whether it's likely fraudulent.</p>
+
+      {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+
+      {% if result %}
+        <div class="alert {{ 'alert-danger' if result.prediction == 'FRAUD' else 'alert-success' }}">
+          <strong>Prediction: {{ result.prediction }}</strong> — fraud probability: {{ result.fraud_probability }}
+        </div>
+      {% endif %}
+
+      <form method="POST" action="/predict">
+        <div class="feature-grid mb-3">
+          {% for col in feature_columns %}
+            <div>
+              <label class="form-label mb-0" style="font-size:0.75rem;">{{ col }}</label>
+              <input class="form-control form-control-sm" type="number" step="any" name="{{ col }}" value="0" required>
+            </div>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-danger">Check Transaction</button>
+      </form>
+
+      <hr>
+      <h5>Batch Screening (CSV Upload)</h5>
+      <form method="POST" action="/batch-predict" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" class="form-control mb-2" required>
+        <button type="submit" class="btn btn-outline-primary">Screen Batch</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
